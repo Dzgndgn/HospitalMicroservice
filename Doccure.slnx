@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/Microservices/">
+    <Project Path="Microservices/Doccure.BranchService/Doccure.BranchService.csproj" />
+  </Folder>
+</Solution>
