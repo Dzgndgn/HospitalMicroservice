@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Microservices/">
     <Project Path="Microservices/Doccure.BranchService/Doccure.BranchService.csproj" />
+    <Project Path="Microservices/Doccure.DoctorService/Doccure.DoctorService.csproj" Id="7374e682-8eea-4c08-9bd7-8cd8a937699c" />
   </Folder>
 </Solution>

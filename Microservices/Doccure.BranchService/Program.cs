@@ -16,6 +16,7 @@ builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddAutoMapper(
     config => { },
     typeof(BranchDtoMappings));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var app = builder.Build();
