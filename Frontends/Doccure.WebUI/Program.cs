@@ -28,7 +28,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    //app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
@@ -38,7 +38,14 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseSession();
-
+app.UseStatusCodePages(context =>
+{
+    if (context.HttpContext.Response.StatusCode == 404)
+    {
+        context.HttpContext.Response.Redirect("/Error/NotFound404");
+    }
+    return Task.CompletedTask;
+});
 app.UseRouting();
 
 app.UseStatusCodePagesWithReExecute("/Error/NotFound404");

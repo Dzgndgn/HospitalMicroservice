@@ -43,6 +43,15 @@ namespace Doccure.AppointmentService.Services.AppointmentServices
             return map;
         }
 
+        public async Task<LastAppointmentDto> getLastAppointment(string patientId)
+        {
+            var lastAppointment = await _context.Appointments.Where(x => x.PatientId == patientId).OrderByDescending(x => x.AppointmentDate).FirstOrDefaultAsync();
+            if (lastAppointment == null)
+                return null;
+            var value = _mapper.Map<LastAppointmentDto>(lastAppointment);
+            return value;
+        }
+
         public async Task UpdateAsync(UpdateAppointmentDto dto)
         {
             var appointment = await _context.Appointments.FirstOrDefaultAsync(x => x.AppointmentId == dto.AppointmentId);

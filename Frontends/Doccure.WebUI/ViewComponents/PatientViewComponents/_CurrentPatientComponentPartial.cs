@@ -15,7 +15,7 @@ namespace Doccure.WebUI.ViewComponents.PatientViewComponents
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var client = _httpClientFactory.CreateClient();
-            var response = await client.GetAsync("https://localhost:7012/api/queues/current");
+            var response = await client.GetAsync("https://localhost:7249/api/queues/current");
             var json = await response.Content.ReadAsStringAsync();
             var value = JsonConvert.DeserializeObject<ResultPatientQueueDto>(json);
             return View(value);

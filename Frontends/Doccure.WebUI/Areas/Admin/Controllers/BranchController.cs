@@ -8,48 +8,54 @@ namespace Doccure.WebUI.Areas.Admin.Controllers
     public class BranchController : Controller
     {
         private readonly IBranchService _branchService;
+
         public BranchController(IBranchService branchService)
         {
             _branchService = branchService;
         }
-        public async Task<IActionResult> BranchList()
-        {
-            var values = await _branchService.GetAllBranchesAsync();
-            return View(values);
-        }
-
         [HttpGet]
         public IActionResult CreateBranch()
         {
             return View();
         }
-
         [HttpPost]
-        public async Task<IActionResult> CreateBranch(CreateBranchDto createBranchDto)
+        public async Task<IActionResult> CreateBranch(CreateBranchDto dto)
         {
-            await _branchService.CreateBranchAsync(createBranchDto);
-            return RedirectToAction("BranchList");
+            await _branchService.CreateBranch(dto);
+            return RedirectToAction("Index");
         }
-
+        public async Task<IActionResult> Index()
+        {
+            try
+            {
+                var branches = await _branchService.GetAllBranch();
+                return View(branches);
+            }
+            catch(Exception ex) when (ex.Message== "401")
+            {
+                return RedirectToAction("Unauthorized401", "Error");
+            }
+            catch(Exception ex) when (ex.Message == "403")
+            {
+                return RedirectToAction("Forbidden403", "Error");
+            }
+        }
+        [HttpDelete]
         public async Task<IActionResult> DeleteBranch(string id)
         {
-            await _branchService.DeleteBranchAsync(id);
-            return RedirectToAction("BranchList");
+            await _branchService.DeleteBranch(id);
+            return RedirectToAction("Index");
         }
-
         [HttpGet]
-        public async Task<IActionResult> UpdateBranch(string id)
+        public async Task<IActionResult> UpdateBranch()
         {
-            var value = await _branchService.GetBranchByIdAsync(id);
-            return View(value);
+            return View();
         }
-
-        [HttpPost]
-        public async Task<IActionResult> UpdateBranch(UpdateBranchDto updateBranchDto)
+        [HttpPut]
+        public async Task<IActionResult> UpdateBranch(UpdateBranchDto dto)
         {
-            await _branchService.UpdateBranchAsync(updateBranchDto);
-            return RedirectToAction("BranchList");
+            await _branchService.UpdateBranch(dto);
+            return RedirectToAction("Index");
         }
     }
 }
-

@@ -46,6 +46,14 @@ namespace Doccure.AppointmentService.Controllers
             await _service.CreateAsync(dto);
             return Ok();
         }
+        [HttpGet("lastAppointment/{patientId}")]
+        public async Task<IActionResult> GetLastAppointment(string patientId)
+        {
+            var lastAppointment = await _service.getLastAppointment(patientId);
+            if (lastAppointment == null)
+                return NotFound();
+            return Ok(lastAppointment);
+        }
 
     }
 }

@@ -1,39 +1,26 @@
 ﻿using Doccure.WebUI.Dtos.LoginDtos;
-using Doccure.WebUI.Dtos.TokenDtos;
-using Newtonsoft.Json;
+using NuGet.Common;
 using System.Text;
+using System.Text.Json;
 
 namespace Doccure.WebUI.Services.LoginServices
 {
     public class LoginService : ILoginService
     {
         private readonly HttpClient _httpClient;
+
         public LoginService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
-        public async Task<string> LoginAsync(LoginDto loginDto)
+
+        public async Task<string> LoginAsync(LoginDto dto)
         {
-            var jsonData = JsonConvert.SerializeObject(loginDto);
-
-            StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
-            var responseMessage = await _httpClient.PostAsync("https://localhost:7225/api/Logins", stringContent);
-
-            if (!responseMessage.IsSuccessStatusCode)
-            {
-                return null;
-            }
-
-            var responseJson = await responseMessage.Content.ReadAsStringAsync();
-
-            var tokenResponse = JsonConvert.DeserializeObject<TokenResponseDto>(responseJson);
-
-            return tokenResponse.Token;
-
-            //var token = await responseMessage.Content.ReadAsStringAsync();
-
-            //return token;
+            var serializedDto = JsonSerializer.Serialize(dto);
+            var content = new StringContent(serializedDto,Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("https://localhost:7191/api/Logins", content);
+            var token = await response.Content.ReadAsStringAsync();
+            return token;
         }
     }
 }

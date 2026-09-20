@@ -18,6 +18,7 @@ namespace Doccure.AppointmentService.Mappings
             CreateMap<AppointmentDetail, UpdateAppointmentDetailDto>().ReverseMap();
             CreateMap<AppointmentDetail, GetByIdAppointmentDetailDto>().ReverseMap();
             CreateMap<AppointmentDetail, ResultAppointmentDetailDto>().ReverseMap();
+            CreateMap<Appointment, LastAppointmentDto>().ReverseMap();
         }
     }
 }

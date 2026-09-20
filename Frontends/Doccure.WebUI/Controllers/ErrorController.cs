@@ -14,6 +14,7 @@ namespace Doccure.WebUI.Controllers
         }
         public IActionResult NotFound404()
         {
+            Response.StatusCode = StatusCodes.Status404NotFound;
             return View();
         }
         public IActionResult ServerError500()

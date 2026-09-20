@@ -4,6 +4,6 @@ namespace Doccure.WebUI.Services.LoginServices
 {
     public interface ILoginService
     {
-        Task<string> LoginAsync(LoginDto loginDto);
+        Task<string> LoginAsync(LoginDto dto);
     }
 }

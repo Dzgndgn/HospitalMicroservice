@@ -17,6 +17,8 @@ namespace Doccure.BranchService.Controllers
         {
             _branchService = branchService;
         }
+        [Authorize(Roles ="Admin")]
+        
         [HttpGet]
         public async Task<IActionResult> getAllBranch()
         {

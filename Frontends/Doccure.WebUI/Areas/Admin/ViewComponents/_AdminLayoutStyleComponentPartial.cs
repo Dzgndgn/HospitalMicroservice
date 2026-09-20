@@ -6,7 +6,9 @@ namespace Doccure.WebUI.Areas.Admin.ViewComponents
     {
         public IViewComponentResult Invoke()
         {
-            return View();
+            return View(
+                "~/Areas/Admin/Views/Shared/Components/" +
+            "_AdminLayoutStyleComponentPartial/Default.cshtml");
         }
     }
 }

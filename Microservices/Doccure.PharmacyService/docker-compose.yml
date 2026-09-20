@@ -1,0 +1,36 @@
+﻿services:
+  pharmacy-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: pharmacy-db
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+    ports:
+      - "15433:1433"
+    volumes:
+      - pharmacy-data:/var/opt/mssql
+    networks:
+      - doccure-network
+
+  pharmacy-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pharmacy-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Server=pharmacy-db,1433;Database=DoccurePharmacyDb;User Id=sa;Password=${MSSQL_SA_PASSWORD};Encrypt=True;TrustServerCertificate=True;"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - pharmacy-db
+    networks:
+      - doccure-network
+
+volumes:
+  pharmacy-data:
+
+networks:
+  doccure-network:
+    driver: bridge

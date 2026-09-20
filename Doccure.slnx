@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/ApiGateway/">
+    <Project Path="ApiGateway/Doccure.Gateway/Doccure.Gateway.csproj" Id="b614bc69-4603-4025-9ae3-c65f8a389ad6" />
+  </Folder>
   <Folder Name="/Frontends/">
     <Project Path="Frontends/Doccure.WebUI/Doccure.WebUI.csproj" />
   </Folder>
@@ -7,7 +10,10 @@
     <Project Path="Microservices/Doccure.BranchService/Doccure.BranchService.csproj" />
     <Project Path="Microservices/Doccure.DoctorService/Doccure.DoctorService.csproj" />
     <Project Path="Microservices/Doccure.IdentityService/Doccure.IdentityService.csproj" />
+    <Project Path="Microservices/Doccure.PatientService/Doccure.PatientService.csproj" Id="5df460d8-c62b-4503-a2ae-419e57ced729" />
+    <Project Path="Microservices/Doccure.PharmacyService/Doccure.PharmacyService.csproj" Id="06337087-7a6c-4303-aa90-1775fb6c3567" />
     <Project Path="Microservices/Doccure.PrescriptionService/Doccure.PrescriptionService.csproj" />
+    <Project Path="Microservices/Doccure.QueueService/Doccure.QueueService.csproj" Id="6899c977-32dd-4a31-8534-6ab9927b281d" />
     <Project Path="Microservices/Doccure.ReviewService/Doccure.ReviewService.csproj" />
   </Folder>
 </Solution>

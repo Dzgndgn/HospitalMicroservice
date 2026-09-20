@@ -1,96 +1,103 @@
 ﻿using Doccure.WebUI.Dtos.BranchDtos;
 using Newtonsoft.Json;
-using System.Net;
-using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Unicode;
 
 namespace Doccure.WebUI.Services.BranchServices
 {
     public class BranchService : IBranchService
     {
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient Ihttpclient;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public BranchService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+        public BranchService(HttpClient ihttpclient, IHttpContextAccessor httpContextAccessor)
         {
-            _httpClient = httpClient;
+            Ihttpclient = ihttpclient;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task CreateBranchAsync(CreateBranchDto createBranchDto)
+        public async Task CreateBranch(CreateBranchDto dto)
         {
-            PrepareAuthorizationHeader();
-            var jsonData = JsonConvert.SerializeObject(createBranchDto);
-            StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var responseMessage = await _httpClient.PostAsync("https://localhost:5000/api/branches", stringContent);
-            await HandleResponseErrors(responseMessage);
+            await RequestHeaders();
+            var jsonData = JsonConvert.SerializeObject(dto);
+            var stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
+            var post =  await Ihttpclient.PostAsync($"https://localhost:5000/api/branches", stringContent);
+            handleErrorResponse(post);
         }
 
-        public async Task DeleteBranchAsync(string id)
+        public async Task DeleteBranch(string id)
         {
-            PrepareAuthorizationHeader();
-            var responseMessage = await _httpClient.DeleteAsync($"https://localhost:5000/api/branches?id={id}");
-            await HandleResponseErrors(responseMessage);
+            await RequestHeaders();
+            var delete = await Ihttpclient.DeleteAsync($"https://localhost:5000/api/branches/{id}");
+            handleErrorResponse(delete);
         }
 
-        public async Task<List<ResultBranchDto>> GetAllBranchesAsync()
+        public async Task<List<ResultBranchDto>> GetAllBranch()
         {
-            PrepareAuthorizationHeader();
+            await RequestHeaders();
 
-            var responseMessage = await _httpClient.GetAsync("https://localhost:5000/api/branches");
-
-            await HandleResponseErrors(responseMessage);
-
-            var jsonData = await responseMessage.Content.ReadAsStringAsync();
-            var values = JsonConvert.DeserializeObject<List<ResultBranchDto>>(jsonData);
-            return values;
-        }
-
-        public async Task<GetByIdBranchDto> GetBranchByIdAsync(string id)
-        {
-            PrepareAuthorizationHeader();
-            var responseMessage = await _httpClient.GetAsync($"https://localhost:5000/api/branches/GetBranch?id={id}");
-            await HandleResponseErrors(responseMessage);
-            var jsonData = await responseMessage.Content.ReadAsStringAsync();
-            var values = JsonConvert.DeserializeObject<GetByIdBranchDto>(jsonData);
-            return values;
-        }
-
-        public async Task UpdateBranchAsync(UpdateBranchDto dto)
-        {
-            PrepareAuthorizationHeader();
-            var jsonData = JsonConvert.SerializeObject(dto); StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var responseMessage = await _httpClient.PutAsync("https://localhost:5000/api/branches", stringContent);
-            await HandleResponseErrors(responseMessage);
-        }
-
-        private void PrepareAuthorizationHeader()
-        {
-            var token = _httpContextAccessor.HttpContext.Session.GetString("JwtToken");
-            token = token?.Trim().Replace("\"", "");
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        }
-
-        private async Task HandleResponseErrors(HttpResponseMessage responseMessage)
-        {
-            if (responseMessage.StatusCode == HttpStatusCode.Forbidden)
+            var response  = await Ihttpclient.GetAsync($"https://localhost:5000/api/branches");
+            handleErrorResponse(response);
+            var  responseData = await response.Content.ReadAsStringAsync();
+            var deserializedData = JsonConvert.DeserializeObject<List<ResultBranchDto>>(responseData);
+            if(deserializedData == null)
             {
-                throw new UnauthorizedAccessException("403");
+                throw new Exception("Failed to deserialize response data.");
             }
+            return deserializedData;
+        }
 
-            if (responseMessage.StatusCode == HttpStatusCode.Unauthorized)
+        public async Task<GetByIdBranchDto> GetByIdBranch(string id)
+        {
+            await RequestHeaders();
+            var response = await Ihttpclient.GetAsync($"https://localhost:5000/api/branches/{id}");
+            handleErrorResponse(response);
+            var responseData = await response.Content.ReadAsStringAsync();
+            var deserializedData = JsonConvert.DeserializeObject<GetByIdBranchDto>(responseData);
+            if(deserializedData == null)
             {
-                throw new UnauthorizedAccessException("401");
+                throw new Exception("Failed to deserialize response data.");
             }
+            return deserializedData;
+        }
 
-            if (responseMessage.StatusCode == HttpStatusCode.NotFound)
+        public async Task UpdateBranch(UpdateBranchDto dto)
+        {
+            await RequestHeaders();
+            var jsonDta = JsonConvert.SerializeObject(dto);
+            var stringContent = new StringContent(jsonDta,Encoding.UTF8, "application/json");
+            var put = await Ihttpclient.PutAsync($"https://localhost:5000/api/branches", stringContent);
+            handleErrorResponse(put);
+
+        }
+        private void handleErrorResponse(HttpResponseMessage responseMessage)
+        {
+           if(responseMessage.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                throw new Exception("404");
+                throw new Exception("401");
             }
-
+           if(responseMessage.StatusCode== System.Net.HttpStatusCode.Forbidden)
+            {
+                throw new Exception("403");
+            }
+           if(responseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new Exception("404)");
+            }
+           if(responseMessage.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+            {
+                throw new Exception("500");
+            }
             if (!responseMessage.IsSuccessStatusCode)
             {
-                throw new Exception("Bir hata oluştu");
+                throw new Exception(
+       $"API hatası: {(int)responseMessage.StatusCode} " +
+       $"({responseMessage.StatusCode})");
             }
+        }
+        private async Task RequestHeaders()
+        {
+            var token = _httpContextAccessor.HttpContext.Session.GetString("JwtToken");
+            Ihttpclient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         }
     }
 }
