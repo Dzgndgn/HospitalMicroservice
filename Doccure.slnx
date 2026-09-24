@@ -10,6 +10,8 @@
     <Project Path="Microservices/Doccure.BranchService/Doccure.BranchService.csproj" />
     <Project Path="Microservices/Doccure.DoctorService/Doccure.DoctorService.csproj" />
     <Project Path="Microservices/Doccure.IdentityService/Doccure.IdentityService.csproj" />
+    <Project Path="Microservices/Doccure.MarketService/Doccure.MarketService.csproj" Id="8b69e7dd-fedb-4ab4-9ff9-3a36f3674362" />
+    <Project Path="Microservices/Doccure.OrderService/Doccure.OrderService.csproj" />
     <Project Path="Microservices/Doccure.PatientService/Doccure.PatientService.csproj" Id="5df460d8-c62b-4503-a2ae-419e57ced729" />
     <Project Path="Microservices/Doccure.PharmacyService/Doccure.PharmacyService.csproj" Id="06337087-7a6c-4303-aa90-1775fb6c3567" />
     <Project Path="Microservices/Doccure.PrescriptionService/Doccure.PrescriptionService.csproj" />

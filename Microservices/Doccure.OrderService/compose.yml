@@ -1,0 +1,44 @@
+﻿services:
+  order-api:
+    container_name: order-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=order-db;Port=3306;Database=DoccureOrderDb;User=orderuser;Password=${ORDER_DB_PASSWORD};"
+    depends_on:
+      order-db:
+        condition: service_healthy
+    networks:
+      - order-network
+
+  order-db:
+    container_name: order-db
+    image: mariadb:11.4
+    ports:
+      - "13306:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: ${ORDER_DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: DoccureOrderDb
+      MARIADB_USER: orderuser
+      MARIADB_PASSWORD: ${ORDER_DB_PASSWORD}
+    volumes:
+      - order-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - order-network
+
+volumes:
+  order-data:
+
+networks:
+  order-network:
+    driver: bridge

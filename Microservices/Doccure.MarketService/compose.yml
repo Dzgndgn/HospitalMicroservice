@@ -1,0 +1,61 @@
+﻿services:
+  market-api:
+    container_name: market-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=market-db,1433;Database=DoccureMarketDb;User Id=sa;Password=${MARKET_DB_PASSWORD};TrustServerCertificate=True;"
+    depends_on:
+      market-db:
+        condition: service_healthy
+    networks:
+      - doccure-network
+
+  market-db:
+    container_name: market-db
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - "15434:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MARKET_DB_PASSWORD}
+    volumes:
+      - market-data:/var/opt/mssql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -C -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - doccure-network
+
+  market-redis:
+    container_name: market-redis
+    image: redis:7-alpine
+    ports:
+      - "16379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - doccure-network
+
+volumes:
+  market-data:
+  redis-data:
+
+networks:
+  doccure-network:
+    driver: bridge
